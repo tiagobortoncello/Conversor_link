@@ -38,7 +38,15 @@ if input_url:
             ))
 
             st.success("Link transformado com sucesso!")
-            st.code(novo_link, language="text")
+
+            # Caixa maior para o link
+            st.text_area("Link transformado:", value=novo_link, height=100)
+
+            # Botão para copiar
+            if st.button("📋 Copiar link"):
+                st.experimental_set_clipboard(novo_link)
+                st.success("Link copiado para a área de transferência!")
+
         else:
             st.error("O link não contém o parâmetro 'dados'.")
     except Exception as e:
