@@ -1,5 +1,5 @@
 import streamlit as st
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import json
 
 st.title("Gerador de Link Jornal Minas Gerais (Sem Domingos)")
@@ -19,10 +19,12 @@ def dia_posterior():
     if st.session_state.data.weekday() == 6:  # domingo
         st.session_state.data += timedelta(days=1)
 
-# Input de data com calendário
+# Input de data com calendário e limites
 data_selecionada = st.date_input(
     "Selecione a data de publicação:",
-    st.session_state.data
+    st.session_state.data,
+    min_value=date(1835, 1, 1),             # mínimo: 01/01/1835
+    max_value=datetime.today().date()       # máximo: hoje
 )
 st.session_state.data = data_selecionada
 
