@@ -4,11 +4,20 @@ import json
 
 st.title("Gerador de Link Jornal Minas Gerais (Sem Domingos)")
 
-# Inicializa a data
-if "data" not in st.session_state:
-    st.session_state.data = datetime.today().date()
+# Define limites do calendário
+min_data = date(1835, 1, 1)
+max_data = datetime.today().date()
 
-# Funções para alterar a data
+# Inicializa a data, garantindo que esteja dentro do intervalo
+if "data" not in st.session_state:
+    data_inicial = datetime.today().date()
+    if data_inicial < min_data:
+        data_inicial = min_data
+    elif data_inicial > max_data:
+        data_inicial = max_data
+    st.session_state.data = data_inicial
+
+# Funções para avançar ou voltar um dia (pulando domingos)
 def dia_anterior():
     st.session_state.data -= timedelta(days=1)
     if st.session_state.data.weekday() == 6:  # domingo
@@ -23,8 +32,8 @@ def dia_posterior():
 data_selecionada = st.date_input(
     "Selecione a data de publicação:",
     st.session_state.data,
-    min_value=date(1835, 1, 1),             # mínimo: 01/01/1835
-    max_value=datetime.today().date()       # máximo: hoje
+    min_value=min_data,
+    max_value=max_data
 )
 st.session_state.data = data_selecionada
 
