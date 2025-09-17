@@ -30,11 +30,24 @@ if input_url:
             novo_link = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}?dados={novo_dados}"
 
             st.success("Link transformado com sucesso!")
-            st.text_area("Link transformado (copie manualmente):", value=novo_link, height=100)
+            
+            # Caixa de texto com o link
+            link_area = st.text_area("Link transformado:", value=novo_link, height=100)
+
+            # Botão para copiar
+            if st.button("📋 Copiar Link"):
+                st.experimental_set_query_params()  # apenas para atualizar o app
+                st.write("Link copiado para a área de transferência!")
+                st.code(novo_link)  # opcional, para mostrar
+                st.markdown(f"""
+                <script>
+                navigator.clipboard.writeText("{novo_link}");
+                </script>
+                """, unsafe_allow_html=True)
 
             st.markdown("""
             <p style="font-size:14px;color:gray;">
-            ⚠️ Clique na caixa acima e copie manualmente.
+            ⚠️ Clique no botão acima para copiar o link automaticamente.
             </p>
             """, unsafe_allow_html=True)
 
