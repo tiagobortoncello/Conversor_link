@@ -44,8 +44,8 @@ novo_dados = json_str.replace("{", "%7B").replace("}", "%7D").replace('"', "%22"
 # Monta o link final
 novo_link = f"https://www.jornalminasgerais.mg.gov.br/edicao-do-dia?dados={novo_dados}"
 
-# Mostra a data escolhida em formato dd/mm/aaaa
-st.markdown(f"**Data escolhida:** {st.session_state.data.strftime('%d/%m/%Y')}")
+# Mostra a data escolhida em formato dd/mm/aaaa (apenas para exibição)
+st.markdown(f"**Data escolhida (dd/mm/aaaa):** {st.session_state.data.strftime('%d/%m/%Y')}")
 
 st.success("Link gerado com sucesso!")
 st.text_area("Link:", value=novo_link, height=100)
