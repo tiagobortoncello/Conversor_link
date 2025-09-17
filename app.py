@@ -15,18 +15,14 @@ def dia_anterior():
 def dia_posterior():
     st.session_state.data += timedelta(days=1)
 
-# Input de data como texto no formato dd/mm/aaaa
-data_str = st.text_input(
-    "Selecione a data de publicação (dd/mm/aaaa):",
-    st.session_state.data.strftime("%d/%m/%Y")
+# Input de data com calendário
+data_selecionada = st.date_input(
+    "Selecione a data de publicação:",
+    st.session_state.data
 )
 
-# Tenta converter para datetime.date
-try:
-    data_convertida = datetime.strptime(data_str, "%d/%m/%Y").date()
-    st.session_state.data = data_convertida
-except ValueError:
-    st.error("Formato inválido! Use dd/mm/aaaa.")
+# Atualiza o estado com a data escolhida
+st.session_state.data = data_selecionada
 
 # Botões para avançar ou voltar um dia
 col1, col2 = st.columns([1,1])
@@ -47,6 +43,9 @@ novo_dados = json_str.replace("{", "%7B").replace("}", "%7D").replace('"', "%22"
 
 # Monta o link final
 novo_link = f"https://www.jornalminasgerais.mg.gov.br/edicao-do-dia?dados={novo_dados}"
+
+# Mostra a data escolhida em formato dd/mm/aaaa
+st.markdown(f"**Data escolhida:** {st.session_state.data.strftime('%d/%m/%Y')}")
 
 st.success("Link gerado com sucesso!")
 st.text_area("Link:", value=novo_link, height=100)
