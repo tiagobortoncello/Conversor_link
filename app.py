@@ -1,7 +1,6 @@
 import streamlit as st
 from urllib.parse import urlparse, parse_qs, quote
 import json
-import streamlit.components.v1 as components
 
 st.title("Gerador de Link Jornal Minas Gerais")
 
@@ -16,32 +15,28 @@ if input_url:
         if dados_json:
             dados_dict = json.loads(dados_json)
 
+            # Mantém apenas 'dataPublicacaoSelecionada'
             nova_dict = {
                 "dataPublicacaoSelecionada": dados_dict.get("dataPublicacaoSelecionada")
             }
 
-            # JSON codificado no formato correto
-            json_str = json.dumps(nova_dict, separators=(',', ':'))
-            novo_dados = quote(json_str, safe='"')
+            # Codifica JSON exatamente no formato desejado
+            json_str = json.dumps(nova_dict, separators=(',', ':'))  # remove espaços
+            novo_dados = quote(json_str, safe='"')  # mantém aspas
+
+            # Monta o link final
             novo_link = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}?dados={novo_dados}"
 
             st.success("Link transformado com sucesso!")
 
-            # Caixa de texto grande
-            st.text_area("Link transformado:", value=novo_link, height=100)
+            # Caixa grande para copiar manualmente
+            st.text_area("Link transformado (copie manualmente com Ctrl+C / Cmd+C):", value=novo_link, height=100)
 
-            # HTML do botão com JavaScript para copiar
-            # Escapando corretamente as aspas
-            copy_button_html = f"""
-            <div style="display:flex;align-items:center;gap:10px;">
-                <button onclick="navigator.clipboard.writeText('{novo_link.replace("'", "\\'")}').then(() => alert('Link copiado!'));" 
-                    style="background-color:#4CAF50;color:white;padding:10px 20px;border:none;border-radius:5px;font-size:16px;cursor:pointer;">
-                    📋 Copiar link
-                </button>
-                <span style="font-size:14px;color:gray;">Clique no botão para copiar automaticamente</span>
-            </div>
-            """
-            components.html(copy_button_html, height=70)
+            st.markdown("""
+                <p style="font-size:14px;color:gray;">
+                ⚠️ Clique na caixa acima e copie manualmente. O Streamlit não permite copiar automaticamente em todas as versões.
+                </p>
+            """, unsafe_allow_html=True)
 
         else:
             st.error("O link não contém o parâmetro 'dados'.")
