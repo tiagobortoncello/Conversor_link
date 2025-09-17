@@ -1,5 +1,5 @@
 import streamlit as st
-from urllib.parse import urlparse, parse_qs, quote
+from urllib.parse import urlparse, parse_qs
 import json
 
 st.title("Gerador de Link Jornal Minas Gerais")
@@ -20,22 +20,22 @@ if input_url:
                 "dataPublicacaoSelecionada": dados_dict.get("dataPublicacaoSelecionada")
             }
 
-            # Codifica JSON exatamente no formato desejado
-            json_str = json.dumps(nova_dict, separators=(',', ':'))  # remove espaços
-            novo_dados = quote(json_str, safe='"')  # mantém aspas
+            # Serializa JSON sem espaços
+            json_str = json.dumps(nova_dict, separators=(',', ':'))
 
-            # Monta o link final
+            # Substitui apenas { e } pelos códigos URL
+            novo_dados = json_str.replace("{", "%7B").replace("}", "%7D")
+
+            # Monta link final
             novo_link = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}?dados={novo_dados}"
 
             st.success("Link transformado com sucesso!")
-
-            # Caixa grande para copiar manualmente
-            st.text_area("Link transformado (copie manualmente com Ctrl+C / Cmd+C):", value=novo_link, height=100)
+            st.text_area("Link transformado (copie manualmente):", value=novo_link, height=100)
 
             st.markdown("""
-                <p style="font-size:14px;color:gray;">
-                ⚠️ Clique na caixa acima e copie manualmente. O Streamlit não permite copiar automaticamente em todas as versões.
-                </p>
+            <p style="font-size:14px;color:gray;">
+            ⚠️ Clique na caixa acima e copie manualmente. O Streamlit não permite copiar automaticamente em todas as versões.
+            </p>
             """, unsafe_allow_html=True)
 
         else:
