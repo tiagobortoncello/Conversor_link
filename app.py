@@ -1,5 +1,5 @@
 import streamlit as st
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs, quote
 import json
 
 st.title("Gerador de Link Jornal Minas Gerais")
@@ -23,8 +23,8 @@ if input_url:
             # Serializa JSON sem espaços
             json_str = json.dumps(nova_dict, separators=(',', ':'))
 
-            # Substitui apenas { e } pelos códigos URL
-            novo_dados = json_str.replace("{", "%7B").replace("}", "%7D")
+            # Codifica { } e " corretamente
+            novo_dados = json_str.replace("{", "%7B").replace("}", "%7D").replace('"', "%22")
 
             # Monta link final
             novo_link = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}?dados={novo_dados}"
@@ -34,7 +34,7 @@ if input_url:
 
             st.markdown("""
             <p style="font-size:14px;color:gray;">
-            ⚠️ Clique na caixa acima e copie manualmente. O Streamlit não permite copiar automaticamente em todas as versões.
+            ⚠️ Clique na caixa acima e copie manualmente.
             </p>
             """, unsafe_allow_html=True)
 
