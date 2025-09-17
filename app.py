@@ -1,56 +1,68 @@
 import streamlit as st
-from urllib.parse import urlparse, parse_qs
+from datetime import datetime, timedelta
 import json
 
-st.title("Gerador de Link Jornal Minas Gerais")
+st.title("Gerador de Link Jornal Minas Gerais (Sem Domingos)")
 
-input_url = st.text_input("Cole o link original aqui:")
+# Inicializa a data
+if "data" not in st.session_state:
+    st.session_state.data = datetime.today().date()
 
-if input_url:
-    try:
-        parsed_url = urlparse(input_url)
-        query_params = parse_qs(parsed_url.query)
+# Funções para alterar a data
+def dia_anterior():
+    st.session_state.data -= timedelta(days=1)
+    if st.session_state.data.weekday() == 6:  # domingo
+        st.session_state.data -= timedelta(days=1)
 
-        dados_json = query_params.get("dados", [None])[0]
-        if dados_json:
-            dados_dict = json.loads(dados_json)
+def dia_posterior():
+    st.session_state.data += timedelta(days=1)
+    if st.session_state.data.weekday() == 6:  # domingo
+        st.session_state.data += timedelta(days=1)
 
-            # Mantém apenas 'dataPublicacaoSelecionada'
-            nova_dict = {
-                "dataPublicacaoSelecionada": dados_dict.get("dataPublicacaoSelecionada")
-            }
+# Input de data com calendário
+data_selecionada = st.date_input(
+    "Selecione a data de publicação:",
+    st.session_state.data
+)
+st.session_state.data = data_selecionada
 
-            # Serializa JSON sem espaços
-            json_str = json.dumps(nova_dict, separators=(',', ':'))
+# Botões para avançar ou voltar um dia
+col1, col2 = st.columns([1,1])
+with col1:
+    if st.button("⬅️ Dia Anterior"):
+        dia_anterior()
+with col2:
+    if st.button("➡️ Próximo Dia"):
+        dia_posterior()
 
-            # Codifica { } e " corretamente
-            novo_dados = json_str.replace("{", "%7B").replace("}", "%7D").replace('"', "%22")
+# Validação para domingos
+if st.session_state.data.weekday() == 6:  # domingo
+    st.error("Domingos não são permitidos! Escolha outra data.")
+else:
+    # Botão para gerar link
+    if st.button("📝 Gerar link"):
+        # Formata a data no padrão do link (YYYY-MM-DD)
+        data_formatada_link = st.session_state.data.strftime("%Y-%m-%d")
+        dados_dict = {"dataPublicacaoSelecionada": f"{data_formatada_link}T06:00:00.000Z"}
 
-            # Monta link final
-            novo_link = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}?dados={novo_dados}"
+        # Serializa JSON sem espaços e codifica { } e "
+        json_str = json.dumps(dados_dict, separators=(',', ':'))
+        novo_dados = json_str.replace("{", "%7B").replace("}", "%7D").replace('"', "%22")
 
-            st.success("Link transformado com sucesso!")
+        # Monta o link final
+        novo_link = f"https://www.jornalminasgerais.mg.gov.br/edicao-do-dia?dados={novo_dados}"
 
-            # Caixa de texto com o link
-            st.text_area("Link transformado:", value=novo_link, height=100)
+        # Mostra a data escolhida em formato dd/mm/aaaa
+        st.markdown(f"**Data escolhida (dd/mm/aaaa):** {st.session_state.data.strftime('%d/%m/%Y')}")
 
-            # Botão para copiar
-            if st.button("📋 Copiar Link"):
-                # Copia para a área de transferência usando JS
-                st.markdown(f"""
-                <script>
-                navigator.clipboard.writeText("{novo_link}");
-                alert("Link copiado para a área de transferência!");
-                </script>
-                """, unsafe_allow_html=True)
+        st.success("Link gerado com sucesso!")
+        st.text_area("Link:", value=novo_link, height=100)
 
-            st.markdown("""
-            <p style="font-size:14px;color:gray;">
-            ⚠️ Clique no botão acima para copiar o link automaticamente.
-            </p>
+        # Botão para copiar
+        if st.button("📋 Copiar Link"):
+            st.markdown(f"""
+            <script>
+            navigator.clipboard.writeText("{novo_link}");
+            alert("Link copiado para a área de transferência!");
+            </script>
             """, unsafe_allow_html=True)
-
-        else:
-            st.error("O link não contém o parâmetro 'dados'.")
-    except Exception as e:
-        st.error(f"Ocorreu um erro: {e}")
