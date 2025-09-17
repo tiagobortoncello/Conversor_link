@@ -1,15 +1,8 @@
 import streamlit as st
 from datetime import datetime, timedelta
 import json
-import locale
 
 st.title("Gerador de Link Jornal Minas Gerais")
-
-# Define o locale para português (Brasil)
-try:
-    locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
-except locale.Error:
-    st.warning("Não foi possível definir o idioma para português. O calendário pode aparecer em inglês.")
 
 # Inicializa a data
 if "data" not in st.session_state:
