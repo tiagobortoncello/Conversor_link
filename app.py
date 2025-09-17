@@ -17,7 +17,7 @@ if "data" not in st.session_state:
         data_inicial = max_data
     st.session_state.data = data_inicial
 
-# Funções para avançar ou voltar um dia (pulando domingos)
+# Funções para avançar, voltar e voltar para hoje (pulando domingos)
 def dia_anterior():
     st.session_state.data -= timedelta(days=1)
     if st.session_state.data.weekday() == 6:  # domingo
@@ -28,6 +28,12 @@ def dia_posterior():
     if st.session_state.data.weekday() == 6:  # domingo
         st.session_state.data += timedelta(days=1)
 
+def ir_hoje():
+    hoje = datetime.today().date()
+    if hoje.weekday() == 6:  # se hoje for domingo, volta para sábado
+        hoje -= timedelta(days=1)
+    st.session_state.data = hoje
+
 # Input de data com calendário e limites
 data_selecionada = st.date_input(
     "Selecione a data de publicação:",
@@ -37,12 +43,15 @@ data_selecionada = st.date_input(
 )
 st.session_state.data = data_selecionada
 
-# Botões para avançar ou voltar um dia
-col1, col2 = st.columns([1,1])
+# Botões para avançar, voltar e hoje
+col1, col2, col3 = st.columns([1,1,1])
 with col1:
     if st.button("⬅️ Dia Anterior"):
         dia_anterior()
 with col2:
+    if st.button("📅 Hoje"):
+        ir_hoje()
+with col3:
     if st.button("➡️ Próximo Dia"):
         dia_posterior()
 
