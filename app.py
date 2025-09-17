@@ -2,7 +2,7 @@ import streamlit as st
 from datetime import datetime, timedelta, date
 import json
 
-st.title("Gerador de Link Jornal Minas Gerais")
+st.title("Gerador de Link Jornal Minas Gerais (Sem Domingos)")
 
 # Define limites do calendário
 min_data = date(1835, 1, 1)
@@ -43,17 +43,26 @@ data_selecionada = st.date_input(
 )
 st.session_state.data = data_selecionada
 
-# Botões para avançar, voltar e hoje
+# Botões para avançar, voltar e Hoje (habilitados/desabilitados conforme limite)
 col1, col2, col3 = st.columns([1,1,1])
+
 with col1:
-    if st.button("⬅️ Dia Anterior"):
-        dia_anterior()
+    if st.session_state.data > min_data:
+        if st.button("⬅️ Dia Anterior"):
+            dia_anterior()
+    else:
+        st.button("⬅️ Dia Anterior", disabled=True)
+
 with col2:
     if st.button("📅 Hoje"):
         ir_hoje()
+
 with col3:
-    if st.button("➡️ Próximo Dia"):
-        dia_posterior()
+    if st.session_state.data < max_data:
+        if st.button("➡️ Próximo Dia"):
+            dia_posterior()
+    else:
+        st.button("➡️ Próximo Dia", disabled=True)
 
 # Validação para domingos
 if st.session_state.data.weekday() == 6:  # domingo
@@ -73,7 +82,7 @@ else:
         novo_link = f"https://www.jornalminasgerais.mg.gov.br/edicao-do-dia?dados={novo_dados}"
 
         # Mostra a data escolhida em formato dd/mm/aaaa
-        st.markdown(f"**Data escolhida:** {st.session_state.data.strftime('%d/%m/%Y')}")
+        st.markdown(f"**Data escolhida (dd/mm/aaaa):** {st.session_state.data.strftime('%d/%m/%Y')}")
 
         st.success("Link gerado com sucesso!")
         st.text_area("Link:", value=novo_link, height=100)
