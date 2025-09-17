@@ -2,7 +2,7 @@ import streamlit as st
 from datetime import datetime, timedelta, date
 import json
 
-st.title("Gerador de Link Jornal Minas Gerais (Sem Domingos)")
+st.title("Gerador de Link Jornal Minas Gerais")
 
 # Define limites do calendário
 min_data = date(1835, 1, 1)
@@ -82,7 +82,7 @@ else:
         novo_link = f"https://www.jornalminasgerais.mg.gov.br/edicao-do-dia?dados={novo_dados}"
 
         # Mostra a data escolhida em formato dd/mm/aaaa
-        st.markdown(f"**Data escolhida (dd/mm/aaaa):** {st.session_state.data.strftime('%d/%m/%Y')}")
+        st.markdown(f"**Data escolhida:** {st.session_state.data.strftime('%d/%m/%Y')}")
 
         st.success("Link gerado com sucesso!")
         st.text_area("Link:", value=novo_link, height=100)
