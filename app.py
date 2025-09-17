@@ -16,16 +16,13 @@ if input_url:
         if dados_json:
             dados_dict = json.loads(dados_json)
 
-            # Mantém apenas 'dataPublicacaoSelecionada'
             nova_dict = {
                 "dataPublicacaoSelecionada": dados_dict.get("dataPublicacaoSelecionada")
             }
 
-            # Codifica JSON exatamente no formato desejado
-            json_str = json.dumps(nova_dict, separators=(',', ':'))  # remove espaços
-            novo_dados = quote(json_str, safe='"')  # mantém aspas
-
-            # Monta o link final
+            # JSON codificado no formato correto
+            json_str = json.dumps(nova_dict, separators=(',', ':'))
+            novo_dados = quote(json_str, safe='"')
             novo_link = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}?dados={novo_dados}"
 
             st.success("Link transformado com sucesso!")
@@ -33,15 +30,18 @@ if input_url:
             # Caixa de texto grande
             st.text_area("Link transformado:", value=novo_link, height=100)
 
-            # Botão de copiar funcional usando JavaScript
+            # HTML do botão com JavaScript para copiar
+            # Escapando corretamente as aspas
             copy_button_html = f"""
-            <button onclick="navigator.clipboard.writeText('{novo_link}')" 
-                style="background-color:#4CAF50;color:white;padding:10px 20px;border:none;border-radius:5px;font-size:16px;">
-                📋 Copiar link
-            </button>
-            <p style="font-size:14px;color:gray;">Clique no botão para copiar automaticamente.</p>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <button onclick="navigator.clipboard.writeText('{novo_link.replace("'", "\\'")}').then(() => alert('Link copiado!'));" 
+                    style="background-color:#4CAF50;color:white;padding:10px 20px;border:none;border-radius:5px;font-size:16px;cursor:pointer;">
+                    📋 Copiar link
+                </button>
+                <span style="font-size:14px;color:gray;">Clique no botão para copiar automaticamente</span>
+            </div>
             """
-            components.html(copy_button_html)
+            components.html(copy_button_html, height=70)
 
         else:
             st.error("O link não contém o parâmetro 'dados'.")
