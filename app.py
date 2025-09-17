@@ -86,12 +86,3 @@ else:
 
         st.success("Link gerado com sucesso!")
         st.text_area("Link:", value=novo_link, height=100)
-
-        # Botão para copiar
-        if st.button("📋 Copiar Link"):
-            st.markdown(f"""
-            <script>
-            navigator.clipboard.writeText("{novo_link}");
-            alert("Link copiado para a área de transferência!");
-            </script>
-            """, unsafe_allow_html=True)
