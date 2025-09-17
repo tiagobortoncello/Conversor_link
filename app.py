@@ -1,5 +1,5 @@
 import streamlit as st
-from urllib.parse import urlparse, parse_qs, quote
+from urllib.parse import urlparse, parse_qs
 import json
 
 st.title("Gerador de Link Jornal Minas Gerais")
@@ -30,18 +30,17 @@ if input_url:
             novo_link = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}?dados={novo_dados}"
 
             st.success("Link transformado com sucesso!")
-            
+
             # Caixa de texto com o link
-            link_area = st.text_area("Link transformado:", value=novo_link, height=100)
+            st.text_area("Link transformado:", value=novo_link, height=100)
 
             # Botão para copiar
             if st.button("📋 Copiar Link"):
-                st.experimental_set_query_params()  # apenas para atualizar o app
-                st.write("Link copiado para a área de transferência!")
-                st.code(novo_link)  # opcional, para mostrar
+                # Copia para a área de transferência usando JS
                 st.markdown(f"""
                 <script>
                 navigator.clipboard.writeText("{novo_link}");
+                alert("Link copiado para a área de transferência!");
                 </script>
                 """, unsafe_allow_html=True)
 
