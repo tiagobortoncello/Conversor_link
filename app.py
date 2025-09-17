@@ -1,10 +1,9 @@
 import streamlit as st
-from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
+from urllib.parse import urlparse, parse_qs, urlunparse, quote
 import json
 
 st.title("Gerador de Link Jornal Minas Gerais")
 
-# Input do usuário
 input_url = st.text_input("Cole o link original aqui:")
 
 if input_url:
@@ -18,31 +17,21 @@ if input_url:
         if dados_json:
             dados_dict = json.loads(dados_json)
 
-            # Mantém apenas a chave 'dataPublicacaoSelecionada'
+            # Mantém apenas 'dataPublicacaoSelecionada'
             nova_dict = {
                 "dataPublicacaoSelecionada": dados_dict.get("dataPublicacaoSelecionada")
             }
 
-            # Codifica de volta para string JSON e URL
-            novo_dados = json.dumps(nova_dict)
-            novo_query = urlencode({"dados": novo_dados})
+            # Codifica o JSON manualmente para manter o formato desejado
+            novo_dados = quote(json.dumps(nova_dict, separators=(',', ':')))
 
             # Monta o novo link
-            novo_link = urlunparse((
-                parsed_url.scheme,
-                parsed_url.netloc,
-                parsed_url.path,
-                parsed_url.params,
-                novo_query,
-                parsed_url.fragment
-            ))
+            novo_link = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}?dados={novo_dados}"
 
             st.success("Link transformado com sucesso!")
-
-            # Caixa maior para o link
             st.text_area("Link transformado:", value=novo_link, height=100)
 
-            # Botão para copiar
+            # Botão de copiar
             if st.button("📋 Copiar link"):
                 st.experimental_set_clipboard(novo_link)
                 st.success("Link copiado para a área de transferência!")
