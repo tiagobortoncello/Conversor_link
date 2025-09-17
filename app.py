@@ -2,7 +2,7 @@ import streamlit as st
 from datetime import datetime, timedelta
 import json
 
-st.title("Gerador de Link Jornal Minas Gerais (Sem Domingos)")
+st.title("Gerador de Link Jornal Minas Gerais")
 
 # Inicializa a data
 if "data" not in st.session_state:
