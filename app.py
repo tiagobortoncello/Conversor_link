@@ -1,6 +1,7 @@
 import streamlit as st
 from urllib.parse import urlparse, parse_qs, quote
 import json
+import streamlit.components.v1 as components
 
 st.title("Gerador de Link Jornal Minas Gerais")
 
@@ -21,7 +22,6 @@ if input_url:
             }
 
             # Codifica JSON exatamente no formato desejado
-            # Usando quote para { } e mantendo aspas normais
             json_str = json.dumps(nova_dict, separators=(',', ':'))  # remove espaços
             novo_dados = quote(json_str, safe='"')  # mantém aspas
 
@@ -30,14 +30,18 @@ if input_url:
 
             st.success("Link transformado com sucesso!")
 
-            st.text_area("Link transformado (copie manualmente):", value=novo_link, height=100)
+            # Caixa de texto grande
+            st.text_area("Link transformado:", value=novo_link, height=100)
 
-            st.markdown("""
-                <button style="background-color:#4CAF50;color:white;padding:10px 20px;border:none;border-radius:5px;font-size:16px;">
+            # Botão de copiar funcional usando JavaScript
+            copy_button_html = f"""
+            <button onclick="navigator.clipboard.writeText('{novo_link}')" 
+                style="background-color:#4CAF50;color:white;padding:10px 20px;border:none;border-radius:5px;font-size:16px;">
                 📋 Copiar link
-                </button>
-                <p style="font-size:14px;color:gray;">Clique na caixa acima e use Ctrl+C / Cmd+C para copiar.</p>
-            """, unsafe_allow_html=True)
+            </button>
+            <p style="font-size:14px;color:gray;">Clique no botão para copiar automaticamente.</p>
+            """
+            components.html(copy_button_html)
 
         else:
             st.error("O link não contém o parâmetro 'dados'.")
